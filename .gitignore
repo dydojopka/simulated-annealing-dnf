@@ -1,0 +1,13 @@
+# Игнорировать временные файлы LaTeX в папке Отчет
+Отчет/report.aux
+Отчет/report.bbl
+Отчет/report.bcf
+Отчет/report.blg
+Отчет/report.fdb_latexmk
+Отчет/report.fls
+Отчет/report.log
+Отчет/report.pdf
+Отчет/report.run.xml
+Отчет/report.synctex.gz
+Отчет/report.thm
+Отчет/report.toc
