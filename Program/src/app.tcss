@@ -64,6 +64,10 @@ Input {
     height: 3;
 }
 
+Input.invalid {
+    border: tab $error;
+}
+
 /* Контейнер для выравнивания весовых коэффициентов в одну строку */
 #weights-row {
     height: auto;
@@ -98,6 +102,21 @@ Input {
     color: $foreground;
     padding: 0 1;
     text-align: center;
+}
+
+#status-label.running {
+    background: $warning;
+    color: $surface;
+}
+
+#status-label.success {
+    background: $success;
+    color: $surface;
+}
+
+#status-label.error {
+    background: $error;
+    color: $surface;
 }
 
 /* Блок графика */

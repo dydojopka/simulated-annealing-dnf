@@ -57,7 +57,7 @@ def to_string(cubes):
             ans += chr(ord('a') + i)
         ans += " | "
     else:
-        ans = ans[:-2] + "\n"
+        ans = ans[:-2] # + "\n" виджет лога(RichLog) самостоятельно добовляет \n для каждого вывода
     return ans
 
 def simulate_annealing(cubes, ones, n, S1, S2, T0, a, N):
