@@ -48,6 +48,7 @@ class ConfigInput(Input):
 
 class RadioGroup(Vertical):
     """Обертка для радио-кнопок"""
+    can_focus = False
     def compose(self) -> ComposeResult:
         
         with RadioSet(id="law-radioset"):
@@ -58,7 +59,7 @@ class RadioGroup(Vertical):
 
     def on_mount(self) -> None:
         self.border_title = "Закон изменения температуры:"
-        self.border_subtitle = "плейсходер!"
+        self.border_subtitle = "плейсхолдер!"
 
 class HistoryLog(RichLog):
     """Виджет лога"""
