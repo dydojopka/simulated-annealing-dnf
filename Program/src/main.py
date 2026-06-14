@@ -88,28 +88,31 @@ class EnergyPlot(PlotextPlot):
     def show_placeholder(self) -> None:
         """Отображает пустой график при запуске программы"""
         self.plt.clear_figure()
-        self.plt.title("График энергии")
+        self.plt.title("Снижение энергии системы (Минимизация ДНФ)")
         self.plt.plot([], [])
-        self.plt.xlabel("Итерации алгоритма")
+        self.plt.xlabel("Изменение температуры (T0 - T)")
         self.plt.ylabel("Энергия системы (E)")
         self.refresh()
 
-    def plot_real_data(self, energies: list[float], temperatures: list[float]) -> None:
-        """Строит график по реальным данным после выполнения алгоритма"""
+    def plot_graph_data(self, graph: list[list[float]]) -> None:
+        """Строит график по данным, которые возвращает simulate_annealing"""
+        if len(graph) != 2:
+            raise ValueError("Данные графика должны содержать две последовательности.")
+
+        x_values, energy_values = graph
+
+        if len(x_values) != len(energy_values):
+            raise ValueError("Количество значений по осям X и Y не совпадает.")
+
+        if not x_values:
+            self.show_placeholder()
+            return
+
         self.plt.clear_figure()
         self.plt.title("Снижение энергии системы (Минимизация ДНФ)")
-        
-        # Ось X - порядковые номера шагов
-        iterations = list(range(1, len(energies) + 1))
-        
-        # Линию энергии
-        self.plt.plot(iterations, energies, marker="braille", label="Энергия")
-        
-        # Линии температуры
-        self.plt.plot(iterations, temperatures, marker="braille", label="Температура")
-        
-        self.plt.xlabel("Количество итераций")
-        self.plt.ylabel("Значение")
+        self.plt.plot(x_values, energy_values, marker="braille")
+        self.plt.xlabel("Изменение температуры (T0 - T)")
+        self.plt.ylabel("Энергия системы (E)")
         self.refresh()
         
 
@@ -154,7 +157,7 @@ class AnnealingTUI(App):
                 yield ConfigInput("0.5", "Коэффициент альфа (a)", "input-alpha")
                 yield ConfigInput("100", "Количество итераций (N)", "input-n")
                 
-                yield RadioGroup(id="law-container")
+                # yield RadioGroup(id="law-container")
                 
                 yield Button("СОХРАНИТЬ И ЗАПУСТИТЬ", variant="primary", id="btn-start")
                 yield Label("Статус: Ожидание конфигурации...", id="status-label")
@@ -381,7 +384,7 @@ class AnnealingTUI(App):
             self._set_status("Алгоритм выполняется...", "running")
 
             await asyncio.sleep(0)
-            result, history = await asyncio.to_thread(
+            result, history, graph = await asyncio.to_thread(
                 simulate_annealing,
                 config.cubes,
                 config.ones,
@@ -392,6 +395,7 @@ class AnnealingTUI(App):
                 config.alpha,
                 config.iterations,
             )
+            self.query_one(EnergyPlot).plot_graph_data(graph)
 
             log.reset()
             for i, state in enumerate(history, start=1):
