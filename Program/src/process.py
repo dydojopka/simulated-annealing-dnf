@@ -1,5 +1,6 @@
 import random
 import math
+import json
 
 def create_implicants(n, vec):
     
@@ -57,7 +58,7 @@ def to_string(cubes):
             ans += chr(ord('a') + i)
         ans += " | "
     else:
-        ans = ans[:-2] # + "\n" виджет лога(RichLog) самостоятельно добовляет \n для каждого вывода
+        ans = ans[:-2]
     return ans
 
 def simulate_annealing(cubes, ones, n, S1, S2, T0, a, N):
@@ -79,8 +80,13 @@ def simulate_annealing(cubes, ones, n, S1, S2, T0, a, N):
         return c
 
     lines = []
+    graph = [[], []]
 
-    while T0 > 0:
+    T = T0
+
+    while T > 0:
+        graph[0].append(T0-T)
+        graph[1].append(energy(cubes, ones, S1, S2, n))
         mini = 1000*1000*1000
         best = set()
         for i in range(N):
@@ -92,12 +98,15 @@ def simulate_annealing(cubes, ones, n, S1, S2, T0, a, N):
         delta = mini - energy(cubes, ones, S1, S2, n)
         if delta <= 0:
             cubes = best
-        elif random.random() < math.exp(-delta/T0):
+        elif random.random() < math.exp(-delta/T):
             cubes = best
+        
         lines.append(to_string(cubes))
-        T0 -= a
+        T -= a  
+    graph[0].append(T0-T)
+    graph[1].append(energy(cubes, ones, S1, S2, n))
 
-    return cubes, lines
+    return cubes, lines, graph
         
         
 def main():
@@ -113,11 +122,17 @@ def main():
 
     cubes = create_implicants(n, vec)
     lines = []
+    graph = []
 
-    result, lines = simulate_annealing(cubes, ones, n, S1, S2, T0, a, N)
+    result, lines, graph = simulate_annealing(cubes, ones, n, S1, S2, T0, a, N)
 
     with open("lines.txt", "w", encoding="utf-8") as file:
         file.writelines(lines)
+        file.close()
+
+    with open("graph.json", "w") as file:
+        json.dump(graph, file)
+        file.close()
 
     print(to_string(result))
 
