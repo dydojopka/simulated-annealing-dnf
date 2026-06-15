@@ -61,9 +61,8 @@ def to_string(cubes):
         ans = ans[:-2]
     return ans
 
-def simulate_annealing(cubes, ones, n, S1, S2, T0, a, N):
+def simulate_annealing(cubes, ones, n, S1, S2, T0, T1, a, N, cooling):
     
-
     def new_cubes():
         c = list(cubes)
         t = random.randint(0, len(c))
@@ -76,7 +75,7 @@ def simulate_annealing(cubes, ones, n, S1, S2, T0, a, N):
         u[k] = p[r]
         c[t] = tuple(u)
         c = set(c)
-        c.discard(tuple(['-', '-', '-']))
+        c.discard(tuple(['-']*n))
         return c
 
     lines = []
@@ -84,12 +83,13 @@ def simulate_annealing(cubes, ones, n, S1, S2, T0, a, N):
 
     T = T0
 
-    while T > 0:
+    i = 1
+    while T > T1:
         graph[0].append(T0-T)
         graph[1].append(energy(cubes, ones, S1, S2, n))
         mini = 1000*1000*1000
         best = set()
-        for i in range(N):
+        for _ in range(N):
             c = new_cubes()
             e = energy(c, ones, S1, S2, n)
             if mini > e:
@@ -102,7 +102,15 @@ def simulate_annealing(cubes, ones, n, S1, S2, T0, a, N):
             cubes = best
         
         lines.append(to_string(cubes))
-        T -= a  
+        match cooling:
+            case "linear":
+                T = T0 - a*i
+            case "boltzmann":
+                T = T0 / math.log(1+i, math.e)
+            case "cauchy":
+                T = T0 / i
+        i += 1
+        
     graph[0].append(T0-T)
     graph[1].append(energy(cubes, ones, S1, S2, n))
 
@@ -115,6 +123,8 @@ def main():
     S1 = float(input())
     S2 = float(input())
     T0 = float(input())
+    T1 = float(input())
+    cooling = input()
     a = float(input())
     N = int(input())
 
@@ -124,7 +134,7 @@ def main():
     lines = []
     graph = []
 
-    result, lines, graph = simulate_annealing(cubes, ones, n, S1, S2, T0, a, N)
+    result, lines, graph = simulate_annealing(cubes, ones, n, S1, S2, T0, T1, a, N, cooling)
 
     with open("lines.txt", "w", encoding="utf-8") as file:
         file.writelines(lines)
