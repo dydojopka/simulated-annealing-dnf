@@ -4,6 +4,8 @@ import multiprocessing
 import time
 import traceback
 import darkdetect
+import sys
+import os
 
 from dataclasses import dataclass
 from queue import Empty
@@ -80,6 +82,17 @@ def _get_multiprocessing_context():
         return multiprocessing.get_context("fork")
     except ValueError:
         return multiprocessing.get_context()
+    
+
+def resource_path(relative_path):
+    """ Получить абсолютный путь к ресурсу, работает и для dev, и для PyInstaller """
+    try:
+        # PyInstaller создает временную папку и сохраняет путь в _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    
+    return os.path.join(base_path, relative_path)
 
 
 # --- КАСТОМ ВИДЖЕТЫ ---
@@ -161,7 +174,7 @@ class EnergyPlot(PlotextPlot):
 # --- ГЛАВНОЕ ПРИЛОЖЕНИЕ ---
 
 class AnnealingTUI(App):
-    CSS_PATH = "app.tcss"
+    CSS_PATH = resource_path("app.tcss")
     BINDINGS = [
         Binding("space", "run_algorithm", "Запустить", priority=True),
         Binding("escape", "stop_algorithm", "Остановить", priority=True),

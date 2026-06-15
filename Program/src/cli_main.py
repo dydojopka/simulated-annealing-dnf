@@ -135,6 +135,9 @@ def main():
     print(f"Лог:    {log_path}")
     print(f"График: {graph_path}")
 
+    print("\nПрограмма завершена.")
+    input("Нажмите Enter, чтобы выйти...")
+
 
 if __name__ == "__main__":
     main()
