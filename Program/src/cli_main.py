@@ -1,11 +1,16 @@
 import math
 import os
+import sys
 import time
-
 import matplotlib.pyplot as plt
 
-# Получаем путь к папке, в которой лежит текущий скрипт
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Правильное определение папки для PyInstaller (--onefile)
+if getattr(sys, 'frozen', False):
+    # Если запущено как скомпилированный .exe
+    BASE_DIR = os.path.dirname(sys.executable)
+else:
+    # Если запущено как обычный скрипт .py
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 from process import (
     create_implicants,

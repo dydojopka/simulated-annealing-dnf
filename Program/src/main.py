@@ -44,6 +44,14 @@ class ConfigValidationError(ValueError):
         super().__init__("\n".join(errors))
         self.errors = errors
 
+def _get_multiprocessing_context():
+    if sys.platform == "win32":
+        # На Windows доступен только spawn
+        return multiprocessing.get_context("spawn")
+    try:
+        return multiprocessing.get_context("fork")
+    except ValueError:
+        return multiprocessing.get_context("spawn")
 
 def _run_simulation_worker(
     result_queue,
@@ -58,6 +66,11 @@ def _run_simulation_worker(
     iterations,
     cooling,
 ) -> None:
+    # ЗАЩИТА TUI: Отключаем вывод в консоль у дочернего процесса,
+    # чтобы он не сбросил настройки терминала Textual при своем завершении
+    sys.stdout = open(os.devnull, 'w')
+    sys.stderr = open(os.devnull, 'w')
+
     try:
         result, history, graph = simulate_annealing(
             cubes,
@@ -694,6 +707,10 @@ class AnnealingTUI(App):
                 stop_button.disabled = True
                 self._is_running = False
 
+
 if __name__ == "__main__":
+    # ОБЯЗАТЕЛЬНО для multiprocessing + PyInstaller на Windows
+    multiprocessing.freeze_support() 
+    
     app = AnnealingTUI()
     app.run()
