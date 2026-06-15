@@ -88,12 +88,25 @@ Input.invalid {
     padding-left: 1;
 }
 
-/* Кнопка запуска */
-#btn-start {
-    margin-top: 1;
+/* Кнопки управления расчётом */
+#actions-row {
+    height: auto;
     width: 100%;
+    margin-top: 1;
+}
+
+#btn-start {
+    width: 2fr;
     background: $primary;
     color: $surface;
+    margin-right: 1;
+}
+
+#btn-stop {
+    width: 1fr;
+    background: $error;
+    color: $surface;
+    margin-left: 1;
 }
 
 #status-label {

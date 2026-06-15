@@ -1,9 +1,12 @@
 import asyncio
 import math
-import random
+import multiprocessing
+import time
+import traceback
 import darkdetect
 
 from dataclasses import dataclass
+from queue import Empty
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, Vertical
@@ -38,6 +41,45 @@ class ConfigValidationError(ValueError):
     def __init__(self, errors: list[str]):
         super().__init__("\n".join(errors))
         self.errors = errors
+
+
+def _run_simulation_worker(
+    result_queue,
+    cubes,
+    ones,
+    n,
+    w1,
+    w2,
+    temp,
+    temp_end,
+    alpha,
+    iterations,
+    cooling,
+) -> None:
+    try:
+        result, history, graph = simulate_annealing(
+            cubes,
+            ones,
+            n,
+            w1,
+            w2,
+            temp,
+            temp_end,
+            alpha,
+            iterations,
+            cooling,
+        )
+    except Exception:
+        result_queue.put(("error", traceback.format_exc()))
+    else:
+        result_queue.put(("success", result, history, graph))
+
+
+def _get_multiprocessing_context():
+    try:
+        return multiprocessing.get_context("fork")
+    except ValueError:
+        return multiprocessing.get_context()
 
 
 # --- КАСТОМ ВИДЖЕТЫ ---
@@ -122,7 +164,9 @@ class AnnealingTUI(App):
     CSS_PATH = "app.tcss"
     BINDINGS = [
         Binding("space", "run_algorithm", "Запустить", priority=True),
+        Binding("escape", "stop_algorithm", "Остановить", priority=True),
         Binding("ctrl+l", "copy_log", "Копировать лог", priority=True),
+        Binding("ctrl+u", "clear_focused_input", "Очистить поле", priority=True),
     ]
 
     INPUT_SELECTORS = (
@@ -141,9 +185,31 @@ class AnnealingTUI(App):
         "#rb-cauchy": "cauchy",
     }
 
+    COOLING_NAMES = {
+        "linear": "линейного",
+        "boltzmann": "Больцмана",
+        "cauchy": "Коши",
+    }
+
+    COOLING_TEMP_END_DEFAULTS = {
+        "linear": "0",
+        "boltzmann": "2",
+        "cauchy": "0.01",
+    }
+
+    COOLING_TEMP_END_MINIMUMS = {
+        "linear": 0.0,
+        "boltzmann": 2.0,
+        "cauchy": 0.01,
+    }
+
     def __init__(self):
         super().__init__()
         self._is_running = False
+        self._stop_requested = False
+        self._worker_process: multiprocessing.Process | None = None
+        self._mp_context = _get_multiprocessing_context()
+        self._last_cooling = "linear"
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
@@ -162,12 +228,15 @@ class AnnealingTUI(App):
                 
                 yield ConfigInput("20", "Нач. температура (T)", "input-temp")
                 yield ConfigInput("0", "Конеч. температура", "input-temp-end")
-                yield ConfigInput("0.5", "Коэффициент альфа (a)", "input-alpha")
                 yield ConfigInput("100", "Количество итераций (N)", "input-n")
                 
                 yield RadioGroup(id="law-container")
+
+                yield ConfigInput("0.5", "Коэффициент альфа (a)", "input-alpha")
                 
-                yield Button("СОХРАНИТЬ И ЗАПУСТИТЬ", variant="primary", id="btn-start")
+                with Horizontal(id="actions-row"):
+                    yield Button("ЗАПУСТИТЬ", variant="primary", id="btn-start")
+                    yield Button("СТОП", variant="error", id="btn-stop", disabled=True)
                 yield Label("Статус: Ожидание конфигурации...", id="status-label")
                 
             with Vertical(id="right-pane"):
@@ -226,6 +295,7 @@ class AnnealingTUI(App):
                 self.theme = "my_dark_theme"
 
             self.query_one(HistoryLog).init_log()
+            self._apply_cooling_ui(update_temp_end=False)
             self._set_status("Ожидание конфигурации...", "idle")
 
             # Вызываем плейсхолдер вместо случайных данных
@@ -241,6 +311,57 @@ class AnnealingTUI(App):
     def _clear_input_errors(self) -> None:
         for selector in self.INPUT_SELECTORS:
             self.query_one(selector, Input).remove_class("invalid")
+
+    def _get_selected_cooling(self) -> str | None:
+        return next(
+            (
+                law
+                for selector, law in self.COOLING_LAWS.items()
+                if self.query_one(selector, RadioButton).value
+            ),
+            None,
+        )
+
+    def _apply_cooling_ui(self, *, update_temp_end: bool) -> None:
+        cooling = self._get_selected_cooling() or "linear"
+        alpha_input = self.query_one("#input-alpha", Input)
+        temp_end_input = self.query_one("#input-temp-end", Input)
+
+        alpha_input.display = cooling == "linear"
+        temp_end_input.placeholder = self.COOLING_TEMP_END_DEFAULTS[cooling]
+
+        if update_temp_end:
+            normalized_value = temp_end_input.value.strip().replace(",", ".")
+            previous_default = self.COOLING_TEMP_END_DEFAULTS.get(self._last_cooling)
+            if not normalized_value or normalized_value == previous_default:
+                temp_end_input.value = self.COOLING_TEMP_END_DEFAULTS[cooling]
+
+        self._last_cooling = cooling
+
+    @staticmethod
+    def _format_elapsed(seconds: float) -> str:
+        if seconds < 60:
+            return f"{seconds:.1f} с"
+
+        total_seconds = int(round(seconds))
+        hours, remainder = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        if hours:
+            return f"{hours} ч {minutes:02d} мин {seconds:02d} с"
+
+        return f"{minutes} мин {seconds:02d} с"
+
+    def _terminate_worker(self) -> None:
+        process = self._worker_process
+        if process is None or not process.is_alive():
+            return
+
+        process.terminate()
+        process.join(timeout=1)
+        if process.is_alive():
+            process.kill()
+            process.join(timeout=1)
 
     def _read_config(self) -> AlgorithmConfig:
         self._clear_input_errors()
@@ -318,15 +439,12 @@ class AnnealingTUI(App):
         w2 = parse_float("#input-w2", "Весовой коэффициент 2", minimum=0, inclusive=True)
         temp = parse_float("#input-temp", "Начальная температура", minimum=0)
         temp_end = parse_float("#input-temp-end", "Конечная температура", minimum=0, inclusive=True)
-        alpha = parse_float("#input-alpha", "Коэффициент альфа", minimum=0)
         iterations = parse_int("#input-n", "Количество итераций", minimum=1)
-        cooling = next(
-            (
-                law
-                for selector, law in self.COOLING_LAWS.items()
-                if self.query_one(selector, RadioButton).value
-            ),
-            None,
+        cooling = self._get_selected_cooling()
+        alpha = (
+            parse_float("#input-alpha", "Коэффициент альфа", minimum=0)
+            if cooling == "linear"
+            else 0.0
         )
 
         if w1 == 0 and w2 == 0:
@@ -339,10 +457,13 @@ class AnnealingTUI(App):
                     "#input-temp-end",
                     "Конечная температура: значение должно быть меньше начальной температуры.",
                 )
-            if cooling in {"boltzmann", "cauchy"} and temp_end == 0:
+
+            minimum_temp_end = self.COOLING_TEMP_END_MINIMUMS.get(cooling)
+            if minimum_temp_end is not None and temp_end < minimum_temp_end:
                 mark_invalid(
                     "#input-temp-end",
-                    "Конечная температура: для закона Больцмана или Коши значение должно быть больше 0.",
+                    "Конечная температура: для закона "
+                    f"{self.COOLING_NAMES[cooling]} значение должно быть не меньше {minimum_temp_end:g}.",
                 )
 
         if cooling is None:
@@ -374,11 +495,43 @@ class AnnealingTUI(App):
         )
 
     @on(Button.Pressed, "#btn-start")
-    async def start_algorithm(self) -> None:
-        await self._run_algorithm()
+    def start_algorithm(self) -> None:
+        # Запускаем алгоритм как независимую фоновую задачу
+        asyncio.create_task(self._run_algorithm())
+
+    @on(Button.Pressed, "#btn-stop")
+    def stop_algorithm(self) -> None:
+        self.action_stop_algorithm()
+
+    def action_run_algorithm(self) -> None:
+        asyncio.create_task(self._run_algorithm())
+
+    @on(RadioSet.Changed, "#law-radioset")
+    def cooling_law_changed(self) -> None:
+        self._apply_cooling_ui(update_temp_end=True)
 
     async def action_run_algorithm(self) -> None:
         await self._run_algorithm()
+
+    def action_stop_algorithm(self) -> None:
+        if not self._is_running:
+            self._set_status("Нет активного расчёта.", "idle")
+            return
+
+        self._stop_requested = True
+        self.query_one("#btn-stop", Button).disabled = True
+        self._set_status("Останавливаю расчёт...", "running")
+        self._terminate_worker()
+
+    def action_clear_focused_input(self) -> None:
+        focused = self.focused
+        if not isinstance(focused, Input):
+            self._set_status("Активное поле ввода не выбрано.", "idle")
+            return
+
+        focused.clear()
+        focused.remove_class("invalid")
+        self._set_status("Активное поле очищено.", "idle")
 
     def action_copy_log(self) -> None:
         log = self.query_one(HistoryLog)
@@ -397,67 +550,136 @@ class AnnealingTUI(App):
             self.notify("Лог скопирован в буфер обмена")
 
     async def _run_algorithm(self) -> None:
-        if self._is_running:
-            self._set_status("Алгоритм уже выполняется.", "running")
-            return
+            if self._is_running:
+                self._set_status("Алгоритм уже выполняется.", "running")
+                return
 
-        self._is_running = True
-        start_button = self.query_one("#btn-start", Button)
-        start_button.disabled = True
-        log = self.query_one(HistoryLog)
+            self._is_running = True
+            self._stop_requested = False
+            start_button = self.query_one("#btn-start", Button)
+            stop_button = self.query_one("#btn-stop", Button)
+            start_button.disabled = True
+            stop_button.disabled = True
+            log = self.query_one(HistoryLog)
+            result_queue = None
 
-        try:
-            self._set_status("Проверяю параметры...", "running")
-            config = self._read_config()
+            try:
+                self._set_status("Проверяю параметры...", "running")
+                config = self._read_config()
 
-            log.reset()
-            log.write_entry(
-                "[bold]Параметры приняты. Запускаю алгоритм...[/bold]",
-                "Параметры приняты. Запускаю алгоритм...",
-            )
-            self._set_status("Алгоритм выполняется...", "running")
+                log.reset()
+                log.write_entry(
+                    "[bold]Параметры приняты. Запускаю алгоритм...[/bold]",
+                    "Параметры приняты. Запускаю алгоритм...",
+                )
+                self._set_status("Алгоритм выполняется...", "running")
+                stop_button.disabled = False
 
-            await asyncio.sleep(0)
-            result, history, graph = await asyncio.to_thread(
-                simulate_annealing,
-                config.cubes,
-                config.ones,
-                config.n,
-                config.w1,
-                config.w2,
-                config.temp,
-                config.temp_end,
-                config.alpha,
-                config.iterations,
-                config.cooling,
-            )
-            self.query_one(EnergyPlot).plot_graph_data(graph)
+                result_queue = self._mp_context.Queue()
+                process = self._mp_context.Process(
+                    target=_run_simulation_worker,
+                    args=(
+                        result_queue,
+                        config.cubes,
+                        config.ones,
+                        config.n,
+                        config.w1,
+                        config.w2,
+                        config.temp,
+                        config.temp_end,
+                        config.alpha,
+                        config.iterations,
+                        config.cooling,
+                    ),
+                    daemon=True,
+                )
+                self._worker_process = process
 
-            log.reset()
-            for i, state in enumerate(history, start=1):
-                log.write_entry(f"[{i}] {state}")
+                started_at = time.monotonic()
+                process.start()
 
-            log.write_entry("")
-            log.write_entry("[bold green]Итог:[/bold green]", "Итог:")
-            log.write_entry(to_string(result))
-            self._set_status(f"Готово. Шагов в истории: {len(history)}.", "success")
+                message = None
+                # Асинхронный цикл опроса, который не блокирует UI
+                while True:
+                    elapsed = time.monotonic() - started_at
+                    self._set_status(f"Алгоритм выполняется... {self._format_elapsed(elapsed)}", "running")
 
-        except ConfigValidationError as error:
-            log.reset()
-            log.write_entry("[bold red]Ошибки в параметрах:[/bold red]", "Ошибки в параметрах:")
-            for message in error.errors:
-                log.write_entry(f"- {message}", message)
-            self._set_status("Исправьте параметры и запустите снова.", "error")
+                    # Мгновенная реакция на нажатие кнопки СТОП
+                    if self._stop_requested:
+                        log.reset()
+                        log.write_entry("[bold yellow]Расчёт остановлен пользователем.[/bold yellow]")
+                        log.write_entry(f"Время до остановки: {self._format_elapsed(elapsed)}")
+                        self._set_status(f"Остановлено. Время: {self._format_elapsed(elapsed)}.", "error")
+                        return
 
-        except Exception as error:
-            log.reset()
-            log.write_entry("[bold red]Ошибка выполнения:[/bold red]", "Ошибка выполнения:")
-            log.write_entry(str(error))
-            self._set_status(f"Ошибка выполнения: {error}", "error")
+                    # Забираем результат из очереди до join(), чтобы избежать переполнения буфера ОС
+                    try:
+                        message = result_queue.get_nowait()
+                        break 
+                    except Empty:
+                        pass
 
-        finally:
-            start_button.disabled = False
-            self._is_running = False
+                    # Если процесс завершился, делаем последнюю попытку считать данные
+                    if not process.is_alive():
+                        try:
+                            message = result_queue.get_nowait()
+                        except Empty:
+                            pass
+                        break
+
+                    # Отдаем управление Textual для отрисовки и приема кликов
+                    await asyncio.sleep(0.1)
+
+                process.join()
+                elapsed = time.monotonic() - started_at
+                elapsed_text = self._format_elapsed(elapsed)
+
+                if message is None:
+                    exit_code = process.exitcode
+                    if exit_code:
+                        raise RuntimeError(f"Расчёт завершился с кодом {exit_code}.")
+                    raise RuntimeError("Расчёт завершился без результата.")
+
+                status = message[0]
+                if status == "error":
+                    raise RuntimeError(message[1])
+
+                _, result, history, graph = message
+                self.query_one(EnergyPlot).plot_graph_data(graph)
+
+                log.reset()
+                
+                # Вывод ВСЕЙ истории (может вызвать кратковременный фриз при больших объемах)
+                for i, state in enumerate(history, start=1):
+                    log.write_entry(f"[{i}] {state}")
+
+                log.write_entry("")
+                log.write_entry("[bold green]Итог:[/bold green]", "Итог:")
+                log.write_entry(to_string(result))
+                log.write_entry(f"Время выполнения: {elapsed_text}")
+                self._set_status(f"Готово за {elapsed_text}. Шагов в истории: {len(history)}.", "success")
+
+            except ConfigValidationError as error:
+                log.reset()
+                log.write_entry("[bold red]Ошибки в параметрах:[/bold red]", "Ошибки в параметрах:")
+                for message in error.errors:
+                    log.write_entry(f"- {message}", message)
+                self._set_status("Исправьте параметры и запустите снова.", "error")
+
+            except Exception as error:
+                log.reset()
+                log.write_entry("[bold red]Ошибка выполнения:[/bold red]", "Ошибка выполнения:")
+                log.write_entry(str(error))
+                self._set_status(f"Ошибка выполнения: {error}", "error")
+
+            finally:
+                self._terminate_worker()
+                if result_queue is not None:
+                    result_queue.close()
+                self._worker_process = None
+                start_button.disabled = False
+                stop_button.disabled = True
+                self._is_running = False
 
 if __name__ == "__main__":
     app = AnnealingTUI()
