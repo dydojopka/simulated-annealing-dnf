@@ -6,7 +6,7 @@
 Отчет/report.fdb_latexmk
 Отчет/report.fls
 Отчет/report.log
-Отчет/report.pdf
+#Отчет/report.pdf
 Отчет/report.run.xml
 Отчет/report.synctex.gz
 Отчет/report.thm
