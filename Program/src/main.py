@@ -25,8 +25,10 @@ class AlgorithmConfig:
     w1: float
     w2: float
     temp: float
+    temp_end: float
     alpha: float
     iterations: int
+    cooling: str
     n: int
     ones: set[str]
     cubes: set[tuple[str, ...]]
@@ -52,14 +54,12 @@ class RadioGroup(Vertical):
     def compose(self) -> ComposeResult:
         
         with RadioSet(id="law-radioset"):
-            yield RadioButton("Больцмана", id="rb-boltzmann")
             yield RadioButton("Линейный", value=True, id="rb-linear")
+            yield RadioButton("Больцмана", id="rb-boltzmann")
             yield RadioButton("Коши", id="rb-cauchy")
-            yield RadioButton("Квадратичный", id="rb-quadratic")
 
     def on_mount(self) -> None:
         self.border_title = "Закон изменения температуры:"
-        self.border_subtitle = "плейсхолдер!"
 
 class HistoryLog(RichLog):
     """Виджет лога"""
@@ -130,9 +130,16 @@ class AnnealingTUI(App):
         "#input-w1",
         "#input-w2",
         "#input-temp",
+        "#input-temp-end",
         "#input-alpha",
         "#input-n",
     )
+
+    COOLING_LAWS = {
+        "#rb-linear": "linear",
+        "#rb-boltzmann": "boltzmann",
+        "#rb-cauchy": "cauchy",
+    }
 
     def __init__(self):
         super().__init__()
@@ -154,17 +161,18 @@ class AnnealingTUI(App):
                         yield ConfigInput("10", "Весовой коэф. 2", "input-w2")
                 
                 yield ConfigInput("20", "Нач. температура (T)", "input-temp")
+                yield ConfigInput("0", "Конеч. температура", "input-temp-end")
                 yield ConfigInput("0.5", "Коэффициент альфа (a)", "input-alpha")
                 yield ConfigInput("100", "Количество итераций (N)", "input-n")
                 
-                # yield RadioGroup(id="law-container")
+                yield RadioGroup(id="law-container")
                 
                 yield Button("СОХРАНИТЬ И ЗАПУСТИТЬ", variant="primary", id="btn-start")
                 yield Label("Статус: Ожидание конфигурации...", id="status-label")
                 
             with Vertical(id="right-pane"):
                 with Container(id="graph-box"):
-                    yield Label("АНАЛИТИКА И ГРАФИКИ", id="title-graph")
+                    yield Label("ГРАФИК", id="title-graph")
                     yield EnergyPlot(id="energy-plot")
                 
                 with Container(id="log-box"):
@@ -309,12 +317,36 @@ class AnnealingTUI(App):
         w1 = parse_float("#input-w1", "Весовой коэффициент 1", minimum=0, inclusive=True)
         w2 = parse_float("#input-w2", "Весовой коэффициент 2", minimum=0, inclusive=True)
         temp = parse_float("#input-temp", "Начальная температура", minimum=0)
+        temp_end = parse_float("#input-temp-end", "Конечная температура", minimum=0, inclusive=True)
         alpha = parse_float("#input-alpha", "Коэффициент альфа", minimum=0)
         iterations = parse_int("#input-n", "Количество итераций", minimum=1)
+        cooling = next(
+            (
+                law
+                for selector, law in self.COOLING_LAWS.items()
+                if self.query_one(selector, RadioButton).value
+            ),
+            None,
+        )
 
         if w1 == 0 and w2 == 0:
             mark_invalid("#input-w1", "Весовые коэффициенты: хотя бы один коэффициент должен быть больше 0.")
             self.query_one("#input-w2", Input).add_class("invalid")
+
+        if temp is not None and temp_end is not None:
+            if temp_end >= temp:
+                mark_invalid(
+                    "#input-temp-end",
+                    "Конечная температура: значение должно быть меньше начальной температуры.",
+                )
+            if cooling in {"boltzmann", "cauchy"} and temp_end == 0:
+                mark_invalid(
+                    "#input-temp-end",
+                    "Конечная температура: для закона Больцмана или Коши значение должно быть больше 0.",
+                )
+
+        if cooling is None:
+            errors.append("Закон изменения температуры: выберите один вариант.")
 
         if errors:
             raise ConfigValidationError(errors)
@@ -332,8 +364,10 @@ class AnnealingTUI(App):
             w1=w1,
             w2=w2,
             temp=temp,
+            temp_end=temp_end,
             alpha=alpha,
             iterations=iterations,
+            cooling=cooling,
             n=n,
             ones=ones,
             cubes=cubes,
@@ -392,8 +426,10 @@ class AnnealingTUI(App):
                 config.w1,
                 config.w2,
                 config.temp,
+                config.temp_end,
                 config.alpha,
                 config.iterations,
+                config.cooling,
             )
             self.query_one(EnergyPlot).plot_graph_data(graph)
 
