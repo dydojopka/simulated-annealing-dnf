@@ -43,98 +43,35 @@ def main():
     print("МИНИМИЗАЦИЯ ДНФ МЕТОДОМ ИМИТАЦИИ ОТЖИГА")
     print("=" * 60)
 
-    # 1. Валидация булева вектора
-    while True:
-        vector = input("1. Булев вектор: ").strip()
-        if not vector:
-            print("Ошибка: вектор не может быть пустым.")
-            continue
-        if not all(c in '01' for c in vector):
-            print("Ошибка: вектор должен состоять только из символов '0' и '1'.")
-            continue
-        length = len(vector)
-        if length < 2 or (length & (length - 1)) != 0:
-            print("Ошибка: длина вектора должна быть степенью двойки (2, 4, 8, 16, 32, 64...).")
-            continue
-        break
+    vector = input("1. Булев вектор: ").strip()
 
-    # 2. Валидация весового коэффициента 1
-    while True:
-        try:
-            w1 = float(input("2. Весовой коэффициент 1: "))
-            if w1 < 0:
-                print("Ошибка: коэффициент не может быть отрицательным.")
-                continue
-            break
-        except ValueError:
-            print("Ошибка: введите корректное число.")
+    w1 = float(input("2. Весовой коэффициент 1: "))
+    w2 = float(input("3. Весовой коэффициент 2: "))
 
-    # 3. Валидация весового коэффициента 2
-    while True:
-        try:
-            w2 = float(input("3. Весовой коэффициент 2: "))
-            if w2 < 0:
-                print("Ошибка: коэффициент не может быть отрицательным.")
-                continue
-            break
-        except ValueError:
-            print("Ошибка: введите корректное число.")
+    temp = float(input("4. Начальная температура: "))
+    temp_end = float(input("5. Конечная температура: "))
 
-    # 4. Валидация начальной температуры
-    while True:
-        try:
-            temp = float(input("4. Начальная температура: "))
-            if temp <= 0:
-                print("Ошибка: начальная температура должна быть больше 0.")
-                continue
-            break
-        except ValueError:
-            print("Ошибка: введите корректное число.")
+    iterations = int(input("6. Количество итераций: "))
 
-    # 5. Валидация конечной температуры
-    while True:
-        try:
-            temp_end = float(input("5. Конечная температура: "))
-            if temp_end <= 0:
-                print("Ошибка: конечная температура должна быть больше 0.")
-                continue
-            if temp_end >= temp:
-                print(f"Ошибка: конечная температура должна быть строго меньше начальной ({temp}).")
-                continue
-            break
-        except ValueError:
-            print("Ошибка: введите корректное число.")
-
-    # 6. Валидация коэффициента альфа
-    while True:
-        try:
-            alpha = float(input("6. Коэффициент альфа (0 < alpha < 1): "))
-            if not (0 < alpha < 1):
-                print("Ошибка: коэффициент альфа должен находиться в диапазоне (0, 1) для корректного затухания.")
-                continue
-            break
-        except ValueError:
-            print("Ошибка: введите корректное число.")
-
-    # 7. Валидация количества итераций
-    while True:
-        try:
-            iterations = int(input("7. Количество итераций: "))
-            if iterations <= 0:
-                print("Ошибка: количество итераций должно быть целым числом больше 0.")
-                continue
-            break
-        except ValueError:
-            print("Ошибка: введите целое число.")
-
-    # 8. Выбор закона охлаждения
     cooling = read_cooling()
 
-    # Подготовка данных для алгоритма
-    n = int(math.log2(len(vector)))
-    cubes, ones = create_implicants(vector)
+    alpha = 0.0
 
-    print("\nЗапуск алгоритма имитации отжига...")
+    if cooling == "linear":
+        alpha = float(input("8. Коэффициент alpha: "))
+
+    n = int(math.log2(len(vector)))
+
+    ones = {
+        str(i)
+        for i, bit in enumerate(vector)
+        if bit == "1"
+    }
+
+    cubes = create_implicants(n, vector)
+
+    print("\nЗапуск алгоритма...\n")
+
     start_time = time.perf_counter()
 
     result, history, graph = simulate_annealing(
@@ -155,7 +92,9 @@ def main():
     # ------------------------
     # ЛОГ
     # ------------------------
+
     log_path = os.path.join(BASE_DIR, "annealing_log.txt")
+
     with open(log_path, "w", encoding="utf-8") as f:
         for i, state in enumerate(history, start=1):
             f.write(f"[{i}] {state}\n")
@@ -168,7 +107,9 @@ def main():
     # ------------------------
     # ГРАФИК
     # ------------------------
+
     graph_path = os.path.join(BASE_DIR, "annealing_graph.png")
+
     x_values, y_values = graph
 
     plt.figure(figsize=(10, 6))
@@ -184,17 +125,23 @@ def main():
     # ------------------------
     # РЕЗУЛЬТАТ
     # ------------------------
+
     print("=" * 60)
-    print("РЕЗУЛЬТАТЫ ВЫЧИСЛЕНИЙ")
-    print("=" * 60)
-    print(to_string(result))
-    print(f"Время выполнения: {elapsed:.4f} сек.")
-    print(f"Лог сохранен в: {log_path}")
-    print(f"График сохранен в: {graph_path}")
+    print("РЕЗУЛЬТАТ")
     print("=" * 60)
 
-    # Ожидание ввода перед закрытием окна (исправление для .exe)
-    input("\nНажмите Enter, чтобы выйти...")
+    print("\nМинимизированная ДНФ:")
+    print(to_string(result))
+
+    print(f"\nВремя выполнения: {elapsed:.4f} сек")
+
+    print("\nФайлы сохранены:")
+
+    print(f"Лог:    {log_path}")
+    print(f"График: {graph_path}")
+
+    print("\nПрограмма завершена.")
+    input("Нажмите Enter, чтобы выйти...")
 
 
 if __name__ == "__main__":
