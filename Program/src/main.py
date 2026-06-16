@@ -9,13 +9,16 @@ import os
 
 from dataclasses import dataclass
 from queue import Empty
+from textual import on, events, errors
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import Header, Footer, Input, Button, Label, RadioSet, RadioButton, RichLog
+from textual.widget import Widget
 from textual_plotext import PlotextPlot
 from textual.theme import Theme
-from textual import on
+from textual.screen import Screen
+from rich.style import Style
 
 from process import (
     create_implicants,
@@ -95,17 +98,6 @@ def _get_multiprocessing_context():
         return multiprocessing.get_context("fork")
     except ValueError:
         return multiprocessing.get_context()
-    
-
-def resource_path(relative_path):
-    """ Получить абсолютный путь к ресурсу, работает и для dev, и для PyInstaller """
-    try:
-        # PyInstaller создает временную папку и сохраняет путь в _MEIPASS
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    
-    return os.path.join(base_path, relative_path)
 
 
 # --- КАСТОМ ВИДЖЕТЫ ---
@@ -152,7 +144,13 @@ class HistoryLog(RichLog):
 
 class EnergyPlot(PlotextPlot):
     """Виджет графика"""
-    
+    can_focus = False
+    can_focus_children = False
+
+    def on_mount(self) -> None:
+        # Отключаем обработку мыши на уровне виджета
+        self.disable_messages(events.MouseMove, events.Enter, events.Leave)
+
     def show_placeholder(self) -> None:
         """Отображает пустой график при запуске программы"""
         self.plt.clear_figure()
@@ -182,18 +180,40 @@ class EnergyPlot(PlotextPlot):
         self.plt.xlabel("Изменение температуры (T0 - T)")
         self.plt.ylabel("Энергия системы (E)")
         self.refresh()
-        
+
+class PerformanceScreen(Screen):
+    """Экран с облегчённой обработкой мыши для плотных графиков (braille)."""
+    MOUSE_STYLE_BYPASS_CLASS = "mouse-passive-art"
+
+    def get_style_at(self, x: int, y: int) -> Style:
+        try:
+            widget, _ = self.get_widget_at(x, y)
+        except errors.NoWidget:
+            return Style.null()
+
+        # Если виджет или его родитель имеет класс bypass, игнорируем стили
+        for node in widget.ancestors_with_self:
+            if isinstance(node, Widget) and node.has_class(self.MOUSE_STYLE_BYPASS_CLASS):
+                return Style.null()
+
+        return super().get_style_at(x, y)
+
 
 # --- ГЛАВНОЕ ПРИЛОЖЕНИЕ ---
 
 class AnnealingTUI(App):
-    CSS_PATH = resource_path("app.tcss")
+    CSS_PATH = "app.tcss"
     BINDINGS = [
         Binding("space", "run_algorithm", "Запустить", priority=True),
         Binding("escape", "stop_algorithm", "Остановить", priority=True),
         Binding("ctrl+l", "copy_log", "Копировать лог", priority=True),
         Binding("ctrl+u", "clear_focused_input", "Очистить поле", priority=True),
     ]
+
+    # Подключаем наш оптимизированный
+    def get_default_screen(self) -> Screen:
+        return PerformanceScreen(id="_default")
+
 
     INPUT_SELECTORS = (
         "#input-vector",
@@ -264,11 +284,12 @@ class AnnealingTUI(App):
                     yield Button("ЗАПУСТИТЬ", variant="primary", id="btn-start")
                     yield Button("СТОП", variant="error", id="btn-stop", disabled=True)
                 yield Label("Статус: Ожидание конфигурации...", id="status-label")
-                
+            
+            # ОТСТУП СДЕЛАН НА ОДИН УРОВЕНЬ С left-pane !!!
             with Vertical(id="right-pane"):
                 with Container(id="graph-box"):
                     yield Label("ГРАФИК", id="title-graph")
-                    yield EnergyPlot(id="energy-plot")
+                    yield EnergyPlot(id="energy-plot", classes="mouse-passive-art")
                 
                 with Container(id="log-box"):
                     yield Label("ЛОГ ИСТОРИИ ВЕКТОРОВ", id="title-log")
