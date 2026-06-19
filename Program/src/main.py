@@ -15,10 +15,11 @@ from textual.binding import Binding
 from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import Header, Footer, Input, Button, Label, RadioSet, RadioButton, RichLog
 from textual.widget import Widget
-from textual_plotext import PlotextPlot
 from textual.theme import Theme
 from textual.screen import Screen
+from textual_plotext import PlotextPlot
 from rich.style import Style
+import matplotlib.pyplot as pyplt
 
 from process import (
     create_implicants,
@@ -26,6 +27,11 @@ from process import (
     to_string
 )
 
+# Правильное определение папки для PyInstaller (--onefile)
+if getattr(sys, 'frozen', False):
+    BASE_DIR = os.path.dirname(sys.executable)
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @dataclass
 class AlgorithmConfig:
@@ -206,6 +212,7 @@ class AnnealingTUI(App):
     BINDINGS = [
         Binding("space", "run_algorithm", "Запустить", priority=True),
         Binding("escape", "stop_algorithm", "Остановить", priority=True),
+        Binding("ctrl+g", "save_graph", "Сохранить график", priority=True),
         Binding("ctrl+l", "copy_log", "Копировать лог", priority=True),
         Binding("ctrl+u", "clear_focused_input", "Очистить поле", priority=True),
     ]
@@ -256,6 +263,7 @@ class AnnealingTUI(App):
         self._worker_process: multiprocessing.Process | None = None
         self._mp_context = _get_multiprocessing_context()
         self._last_cooling = "linear"
+        self._last_graph: list[list[float]] | None = None
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
@@ -295,7 +303,7 @@ class AnnealingTUI(App):
                     yield Label("ЛОГ ИСТОРИИ ВЕКТОРОВ", id="title-log")
                     yield HistoryLog(id="vector-log", highlight=True, markup=True)
                     
-        yield Footer()
+        yield Footer(show_command_palette=False)
 
 
     def _register_themes(self) -> None:
@@ -580,6 +588,32 @@ class AnnealingTUI(App):
         focused.remove_class("invalid")
         self._set_status("Активное поле очищено.", "idle")
 
+    def action_save_graph(self) -> None:
+        if self._last_graph is None:
+            self._set_status("Нет данных для сохранения. Сначала запустите алгоритм.", "error")
+            self.notify("Сначала запустите алгоритм", severity="warning")
+            return
+
+        graph_path = os.path.join(BASE_DIR, "annealing_graph.png")
+        x_values, y_values = self._last_graph
+
+        try:
+            pyplt.figure(figsize=(10, 6))
+            pyplt.plot(x_values, y_values)
+            pyplt.title("Снижение энергии системы")
+            pyplt.xlabel("Изменение температуры (T0 - T)")
+            pyplt.ylabel("Энергия системы (E)")
+            pyplt.grid(True)
+            pyplt.savefig(graph_path, dpi=300, bbox_inches="tight")
+            pyplt.close()
+        except Exception as error:
+            self._set_status(f"Не удалось сохранить график: {error}", "error")
+            self.notify(f"Ошибка сохранения: {error}", severity="error")
+        else:
+            self._set_status(f"График сохранён: {graph_path}", "success")
+            self.notify(f"График сохранён:\n{graph_path}", timeout=5)
+
+
     def action_copy_log(self) -> None:
         log = self.query_one(HistoryLog)
         text = log.get_copy_text().strip()
@@ -692,6 +726,7 @@ class AnnealingTUI(App):
                     raise RuntimeError(message[1])
 
                 _, result, history, graph = message
+                self._last_graph = graph
                 self.query_one(EnergyPlot).plot_graph_data(graph)
 
                 log.reset()

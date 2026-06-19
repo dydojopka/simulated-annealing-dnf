@@ -114,7 +114,9 @@ Input.invalid {
     background: $secondary;
     color: $foreground;
     padding: 0 1;
-    text-align: center;
+    # text-align: center;
+    text-wrap: wrap;
+    max-width: 100%;
 }
 
 #status-label.running {
