@@ -213,7 +213,7 @@ class AnnealingTUI(App):
         Binding("space", "run_algorithm", "Запустить", priority=True),
         Binding("escape", "stop_algorithm", "Остановить", priority=True),
         Binding("ctrl+g", "save_graph", "Сохранить график", priority=True),
-        Binding("ctrl+l", "copy_log", "Копировать лог", priority=True),
+        Binding("ctrl+l", "save_log", "Сохранить лог", priority=True),
         Binding("ctrl+u", "clear_focused_input", "Очистить поле", priority=True),
     ]
 
@@ -614,21 +614,24 @@ class AnnealingTUI(App):
             self.notify(f"График сохранён:\n{graph_path}", timeout=5)
 
 
-    def action_copy_log(self) -> None:
+    def action_save_log(self) -> None:
         log = self.query_one(HistoryLog)
         text = log.get_copy_text().strip()
 
         if not text:
-            self._set_status("Лог пуст, копировать нечего.", "error")
+            self._set_status("Лог пуст, нечего сохранять.", "error")
             return
 
+        log_path = os.path.join(BASE_DIR, "annealing_log.txt")
         try:
-            self.copy_to_clipboard(text)
+            with open(log_path, "w", encoding="utf-8") as f:
+                f.write(text)
         except Exception as error:
-            self._set_status(f"Не удалось скопировать лог: {error}", "error")
+            self._set_status(f"Не удалось сохранить лог: {error}", "error")
+            self.notify(f"Ошибка сохранения лога: {error}", severity="error")
         else:
-            self._set_status("Лог скопирован в буфер обмена.", "success")
-            self.notify("Лог скопирован в буфер обмена")
+            self._set_status(f"Лог сохранён: {log_path}", "success")
+            self.notify(f"Лог сохранён:\n{log_path}", timeout=5)
 
     async def _run_algorithm(self) -> None:
             if self._is_running:
