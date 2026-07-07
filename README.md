@@ -47,6 +47,8 @@
 
 ## Установка
 
+Можно скачать нужные `exe` файлы со [страницы последнего релиза](https://github.com/dydojopka/simulated-annealing-dnf/releases/latest) или же собрать из исходного кода.
+
 Для самостоятельной сборки потребуется:
 - **Python** 3.11 или новее
 - Для TUI-версии - терминал с поддержкой **ANSI/VT-последовательностей** и **True Color** (например: Windows Terminal, kitty или другой)
@@ -66,19 +68,19 @@ cd simulated-annealing-dnf
 
 2. Создайте и активируйте виртуальное окружение:
 
-Linux:
+    Linux:
 
-```bash
-python -m venv venv
-source venv/bin/activate
-```
+    ```bash
+    python -m venv venv
+    source venv/bin/activate
+    ```
 
-Windows:
+    Windows:
 
-```bat
-python -m venv venv
-venv\Scripts\activate
-```
+    ```bat
+    python -m venv venv
+    venv\Scripts\activate
+    ```
 
 3. Установите зависимости:
 
