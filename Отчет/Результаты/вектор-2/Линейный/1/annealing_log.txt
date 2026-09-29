@@ -1,0 +1,53 @@
+[1] ~a~b~cd | ~a~bc~d | ~ab~c~d | ~ab~cd | ~abcd | a~bc~d | ab~c~d | abcd 
+[2] ~a~b~cd | ~a~bc~d | ~ab~c~d | ~abcd | a~bc~d | ab~c~d | abcd 
+[3] ~a~b~cd | ~a~bc~d | ~ab~c~d | ~abcd | a~bc~d | abcd 
+[4] ~a~b~cd | ~a~bc~d | ~ab~c~d | ~abcd | a~bc~d 
+[5] ~a~b~cd | ~ab~c~d | ~abcd | a~bc~d 
+[6] ~a~b~cd | ~ab~c | ~abcd | a~bc~d 
+[7] b~c | ~a~b~cd | ~abcd | a~bc~d 
+[8] ~bc~d | b~c | ~a~b~cd | ~abcd 
+[9] ~bc~d | b~c | ~a~b~cd | ~abd 
+[10] ~bc~d | bd | b~c | ~a~b~cd 
+[11] ~b~cd | ~bc~d | bd | b~c 
+[12] ~cd | ~bc~d | bd | b~c 
+[13] ~cd | ~bc~d | bd | b~c 
+[14] ~cd | ~bc~d | bd | b~c 
+[15] ~cd | ~bc~d | bd | b~c 
+[16] ~cd | ~bc~d | bd | b~c 
+[17] ~cd | ~bc~d | bd | b~c 
+[18] ~bc~d | bd | b~c | ~a~cd 
+[19] ~bc~d | bd | b~c | ~ad 
+[20] ~bc~d | bd | b~c | ~ad 
+[21] ~bc~d | bd | b~c | ~ad 
+[22] ~bc~d | bd | b~c | ~ad 
+[23] ~bc~d | bd | b~c | ~ad 
+[24] ~bc~d | bd | b~c | ~ad 
+[25] ~bc~d | bd | b~c | ~a~cd 
+[26] ~bc~d | bd | b~c | ~a~cd 
+[27] ~bc~d | bd | b~c | ~a~cd 
+[28] ~bc~d | bd | b~c | ~a~cd 
+[29] ~bc~d | bd | b~c | ~a~cd 
+[30] ~bc~d | bd | b~c | ~a~cd 
+[31] ~bc~d | bd | b~c | ~a~cd 
+[32] ~bc~d | bd | b~c | ~a~cd 
+[33] ~bc~d | bd | b~c | ~a~cd 
+[34] ~bc~d | bd | b~c | ~a~cd 
+[35] ~bc~d | bd | b~c | ~a~cd 
+[36] ~bc~d | bd | b~c | ~a~cd 
+[37] ~bc~d | bd | b~c | ~a~cd 
+[38] ~bc~d | bd | b~c | ~a~cd 
+[39] ~bc~d | bd | b~c | ~a~cd 
+[40] ~bc~d | bd | b~c | ~a~cd 
+[41] ~bc~d | bd | b~c | ~ad 
+[42] ~bc~d | bd | b~c | ~ad 
+[43] ~bc~d | bd | b~c | ~ad 
+[44] ~bc~d | bd | b~c | ~ad 
+[45] ~bc~d | bd | b~c | ~ad 
+[46] ~bc~d | bd | b~c | ~ad 
+[47] ~bc~d | bd | b~c | ~ad 
+[48] ~bc~d | bd | b~c | ~ad 
+[49] ~bc~d | bd | b~c | ~ad 
+[50] ~bc~d | bd | b~c | ~ad 
+
+ИТОГ:
+~bc~d | bd | b~c | ~ad 

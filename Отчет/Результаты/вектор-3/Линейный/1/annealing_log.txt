@@ -1,0 +1,83 @@
+[1] ~a~b~c~de | ~a~bcd~e | ~ab~c~de | ~abc~d~e | ~abc~de | ~abcd~e | a~b~c~d~e | a~b~cd~e | a~bc~d~e | a~bc~de | a~bcde | ab~c~de | ab~cde | abc~d~e | abc~de | abcd~e 
+[2] ~a~b~c~de | ~a~bcd~e | ~ab~c~de | ~abc~d~e | ~abc~de | ~abcd~e | a~b~c~d~e | a~b~cd~e | a~bc~d~e | a~bc~de | a~bcde | ab~cde | abc~d~e | abc~de | abcd~e 
+[3] ~a~b~c~de | ~a~bcd~e | ~ab~c~de | ~abc~d~e | ~abc~de | ~abcd~e | a~b~c~d~e | a~b~cd~e | a~bc~d~e | a~bc~de | a~bcde | ab~cde | abc~d~e | abc~de 
+[4] ~a~b~c~de | ~a~bcd~e | ~ab~c~de | ~abc~d~e | ~abc~de | ~abcd~e | a~b~c~d~e | a~b~cd~e | a~bc~de | a~bcde | ab~cde | abc~d~e | abc~de 
+[5] ~a~b~c~de | ~a~bcd~e | ~ab~c~de | ~abc~d~e | ~abc~de | ~abcd~e | a~b~c~d~e | a~b~cd~e | a~bc~de | a~bcde | ab~cde | abc~d~e 
+[6] bcd~e | ~a~b~c~de | ~a~bcd~e | ~ab~c~de | ~abc~d~e | ~abc~de | a~b~c~d~e | a~b~cd~e | a~bc~de | a~bcde | ab~cde | abc~d~e 
+[7] bcd~e | ~a~b~c~de | ~a~bcd~e | ~ab~c~de | ~abc~d~e | ~abc~de | a~b~c~d~e | a~b~cd~e | a~bc~de | a~bcde | ab~ce | abc~d~e 
+[8] bc~de | bcd~e | ~a~b~c~de | ~a~bcd~e | ~ab~c~de | ~abc~d~e | a~b~c~d~e | a~b~cd~e | a~bc~de | a~bcde | ab~ce | abc~d~e 
+[9] bc~de | bcd~e | ~a~b~c~de | ~a~bcd~e | ~ab~c~de | ~abc~d~e | ac~d~e | a~b~c~d~e | a~b~cd~e | a~bc~de | a~bcde | ab~ce 
+[10] bc~de | bcd~e | ~a~bcd~e | ~ab~c~de | ~abc~d~e | ac~d~e | a~b~c~d~e | a~b~cd~e | a~bc~de | a~bcde | ab~ce 
+[11] bc~de | bcd~e | ~a~bcd~e | ~ab~c~de | ~abc~d~e | ac~d~e | a~b~c~d~e | a~bc~de | a~bcde | ab~ce 
+[12] bc~de | bcd~e | ~a~bcd~e | ~ab~c~de | ~abc~d~e | ac~d~e | a~b~c~d~e | a~bc~de | ab~ce 
+[13] bc~de | bcd~e | ~a~bcd~e | ~ab~c~de | ~abc~d~e | ac~d~e | a~b~c~d~e | a~bce | ab~ce 
+[14] bc~de | bcd~e | ~a~c~de | ~a~bcd~e | ~abc~d~e | ac~d~e | a~b~c~d~e | a~bce | ab~ce 
+[15] bc~de | bcd~e | ~a~c~de | ~a~bcd~e | ~ab~d~e | ac~d~e | a~b~c~d~e | a~bce | ab~ce 
+[16] bc~de | bcd~e | ~a~c~de | ~a~bcd~e | ~ab~d~e | ac~d~e | a~b~c~e | a~bce | ab~ce 
+[17] bc~de | bcd~e | ~a~c~de | ~a~bcd~e | ~ab~d~e | ac~d | a~b~c~e | a~bce | ab~ce 
+[18] bc~e | bc~de | ~a~c~de | ~a~bcd~e | ~ab~d~e | ac~d | a~b~c~e | a~bce | ab~ce 
+[19] b~de | bc~e | ~a~c~de | ~a~bcd~e | ~ab~d~e | ac~d | a~b~c~e | a~bce | ab~ce 
+[20] b~de | bc~e | ~a~c~de | ~a~bcd~e | ~ab~d~e | ac~d | a~b~c~e | a~bce | ab~ce 
+[21] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d~e | ac~d | a~b~c~e | a~bce | ab~ce 
+[22] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d~e | ac~d | a~b~c~e | a~bce | ab~ce 
+[23] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[24] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[25] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[26] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[27] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[28] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[29] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[30] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[31] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[32] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[33] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[34] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[35] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[36] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[37] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[38] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[39] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[40] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[41] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[42] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[43] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[44] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[45] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[46] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[47] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[48] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[49] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[50] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[51] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[52] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[53] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[54] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[55] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[56] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[57] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[58] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[59] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[60] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[61] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[62] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[63] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[64] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[65] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[66] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[67] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[68] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[69] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[70] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[71] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[72] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[73] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[74] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[75] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[76] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[77] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[78] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[79] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+[80] b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 
+
+ИТОГ:
+b~de | bc~e | ~a~c~de | ~acd~e | ~ab~d | ac~d | a~b~c~e | a~bce | ab~ce 

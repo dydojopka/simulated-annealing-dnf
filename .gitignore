@@ -13,10 +13,14 @@
 Отчет/report.toc
 Отчет/report.out
 Отчет/report.bbl-SAVE-ERROR
+#Отчет/Результаты
 
 
-annealing_graph.png
-annealing_log.txt
+#annealing_graph.png
+#annealing_log.txt
 build/
 dist/
-Annealing*
+#Annealing*
+#numbers.txt
+params.txt
+run_experiment.py

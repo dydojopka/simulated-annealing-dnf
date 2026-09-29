@@ -1,0 +1,103 @@
+[1] ~a~b~cd | ~a~bc~d | ~ab~c~d | ~ab~cd | ~abcd | a~bc~d | ab~cd | abcd 
+[2] ~a~b~cd | ~a~bc~d | ~ab~c~d | ~ab~cd | a~bc~d | ab~cd | abcd 
+[3] ~a~b~cd | ~a~bc~d | ~ab~c~d | ~ab~cd | a~bc~d | ab~cd 
+[4] ~a~b~cd | ~a~bc~d | ~ab~cd | a~bc~d | ab~cd 
+[5] ~a~b~cd | ~a~bc~d | a~bc~d | ab~cd 
+[6] b | ~a~b~cd | ~a~bc~d | a~bc~d | ab~cd 
+[7] b | ~a~b~cd | a~bc~d | ab~cd 
+[8] ~bc~d | b | ~a~b~cd | ab~cd 
+[9] ~bc~d | b | ~a~b~cd | ab~c 
+[10] c~d | b | ~a~b~cd | ab~c 
+[11] c~d | b | ~a~b~cd | ab 
+[12] c~d | b | ~a~cd | ab 
+[13] c~d | b | ~a~cd | ab 
+[14] c~d | b | ~a~cd 
+[15] c~d | b | ~a~cd 
+[16] c~d | b | ~a~cd 
+[17] c~d | b | ~a~cd 
+[18] c~d | b | ~a~cd 
+[19] c~d | b | ~a~cd 
+[20] c~d | b | ~a~cd 
+[21] c~d | b | ~a~cd 
+[22] c~d | b | ~a~cd 
+[23] c~d | b | ~a~cd 
+[24] c~d | b | ~a~cd 
+[25] c~d | b | ~a~cd 
+[26] c~d | b | ~a~cd 
+[27] c~d | b | ~a~cd 
+[28] c~d | b | ~a~cd 
+[29] c~d | b | ~a~cd 
+[30] c~d | b | ~a~cd 
+[31] c~d | b | ~a~cd 
+[32] c~d | b | ~a~cd 
+[33] c~d | b | ~a~cd 
+[34] c~d | b | ~a~cd 
+[35] c~d | b | ~a~cd 
+[36] c~d | b | ~a~cd 
+[37] c~d | b | ~a~cd 
+[38] c~d | b | ~a~cd 
+[39] c~d | b | ~a~cd 
+[40] c~d | b | ~a~cd 
+[41] c~d | b | ~a~cd 
+[42] c~d | b | ~a~cd 
+[43] c~d | b | ~a~cd 
+[44] c~d | b | ~a~cd 
+[45] c~d | b | ~a~cd 
+[46] c~d | b | ~a~cd 
+[47] c~d | b | ~a~cd 
+[48] c~d | b | ~a~cd 
+[49] c~d | b | ~a~cd 
+[50] c~d | b | ~a~cd 
+[51] c~d | b | ~a~cd 
+[52] c~d | b | ~a~cd 
+[53] c~d | b | ~a~cd 
+[54] c~d | b | ~a~cd 
+[55] c~d | b | ~a~cd 
+[56] c~d | b | ~a~cd 
+[57] c~d | b | ~a~cd 
+[58] c~d | b | ~a~cd 
+[59] c~d | b | ~a~cd 
+[60] c~d | b | ~a~cd 
+[61] c~d | b | ~a~cd 
+[62] c~d | b | ~a~cd 
+[63] c~d | b | ~a~cd 
+[64] c~d | b | ~a~cd 
+[65] c~d | b | ~a~cd 
+[66] c~d | b | ~a~cd 
+[67] c~d | b | ~a~cd 
+[68] c~d | b | ~a~cd 
+[69] c~d | b | ~a~cd 
+[70] c~d | b | ~a~cd 
+[71] c~d | b | ~a~cd 
+[72] c~d | b | ~a~cd 
+[73] c~d | b | ~a~cd 
+[74] c~d | b | ~a~cd 
+[75] c~d | b | ~a~cd 
+[76] c~d | b | ~a~cd 
+[77] c~d | b | ~a~cd 
+[78] c~d | b | ~a~cd 
+[79] c~d | b | ~a~cd 
+[80] c~d | b | ~a~cd 
+[81] c~d | b | ~a~cd 
+[82] c~d | b | ~a~cd 
+[83] c~d | b | ~a~cd 
+[84] c~d | b | ~a~cd 
+[85] c~d | b | ~a~cd 
+[86] c~d | b | ~a~cd 
+[87] c~d | b | ~a~cd 
+[88] c~d | b | ~a~cd 
+[89] c~d | b | ~a~cd 
+[90] c~d | b | ~a~cd 
+[91] c~d | b | ~a~cd 
+[92] c~d | b | ~a~cd 
+[93] c~d | b | ~a~cd 
+[94] c~d | b | ~a~cd 
+[95] c~d | b | ~a~cd 
+[96] c~d | b | ~a~cd 
+[97] c~d | b | ~a~cd 
+[98] c~d | b | ~a~cd 
+[99] c~d | b | ~a~cd 
+[100] c~d | b | ~a~cd 
+
+ИТОГ:
+c~d | b | ~a~cd 
